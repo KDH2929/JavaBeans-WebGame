@@ -21,11 +21,75 @@
           var id    = fromServer('<%=(String)session.getAttribute("id")%>',   '');
 
         	
-            var heart=new Image();
-            heart.src="JPG/heart.png";
+          var heart = new Image(), heartReady = false;
+          heart.onload  = () => heartReady = true;
+          heart.onerror = () => { heartReady = false; };
+          heart.src = "JPG/heart.png";
 
-            var enemy2_bullet=new Image();
-            enemy2_bullet.src="JPG/enemy_bullet.png"
+          var enemy2_bullet = new Image(), bulletReady = false;
+          enemy2_bullet.onload  = () => bulletReady = true;
+          enemy2_bullet.onerror = () => { bulletReady = false; };
+          enemy2_bullet.src = "JPG/enemy_bullet.png";
+
+           const HEART_WIDTH = 40;
+           const HEART_HEIGHT = 36;
+           const BULLET_SIZE = 36;   // 지름
+
+            function drawHeart(context, x, y) {
+                if (heartReady) {
+                    context.drawImage(heart, x, y, HEART_WIDTH, HEART_HEIGHT);
+                    return;
+                }
+
+                const w = HEART_WIDTH;
+                const h = HEART_HEIGHT;
+                const topCurveHeight = h * 0.30;
+
+                context.save();
+                context.beginPath();
+
+                // 아래 꼭짓점에서 시작 → 우측 상단 곡선 → 위 가운데 → 좌측 상단 곡선 → 다시 아래 꼭짓점
+                context.moveTo(x + w / 2, y + h);
+                context.bezierCurveTo(
+                    x + w / 2 + w * 0.20, y + h - topCurveHeight,
+                    x + w, y + h - topCurveHeight,
+                    x + w, y + h / 2
+                );
+                context.bezierCurveTo(
+                    x + w, y + h * 0.20,
+                    x + w * 0.75, y + h * 0.10,
+                    x + w / 2, y + h * 0.30
+                );
+                context.bezierCurveTo(
+                    x + w * 0.25, y + h * 0.10,
+                    x, y + h * 0.20,
+                    x, y + h / 2
+                );
+                context.bezierCurveTo(
+                    x, y + h - topCurveHeight,
+                    x + w / 2 - w * 0.20, y + h - topCurveHeight,
+                    x + w / 2, y + h
+                );
+
+                context.closePath();
+                context.fillStyle = "#ff2d55"; // 선명한 빨강
+                context.fill();
+                context.restore();
+            }
+
+            // 탄환(이미지 없으면 큰 원형 빨간 탄환)
+            function drawBullet(context, x, y) {
+                if (bulletReady) {
+                    context.drawImage(enemyBullet, x, y, BULLET_SIZE, BULLET_SIZE);
+                    return;
+                }
+                context.save();
+                context.beginPath();
+                context.arc(x + BULLET_SIZE / 2, y + BULLET_SIZE / 2, BULLET_SIZE / 2, 0, Math.PI * 2);
+                context.fillStyle = "#e53935";
+                context.fill();
+                context.restore();
+            }
            
 
             var score=0;
@@ -487,44 +551,31 @@
                 context.fill();
             }
 
-            function enemy(enemyX,enemyY,enemyType)
-            {
-                var canvas = document.getElementById('myCanvas');
-                var context = canvas.getContext('2d');
+            function enemy(enemyX, enemyY, enemyType) {
+                const canvas = document.getElementById('myCanvas');
+                const context = canvas.getContext('2d');
 
-                if(enemyType=="enemy1")
-                {
-                context.beginPath();
-                context.rect(enemyX, enemyY, 40, 40);
-                context.fillStyle = "blue";
+                if (enemyType === "enemy1" || enemyType === "enemy2" || enemyType === "boss1") {
+                    const size = (enemyType === "boss1") ? 60 : 40;
+                    context.save();
+                    context.fillStyle = (enemyType === "enemy1") ? "blue"
+                        : (enemyType === "enemy2") ? "purple"
+                            : "black";
+                    context.fillRect(enemyX, enemyY, size, size);
+                    context.restore();
+                    return;
                 }
 
-                
-                else if(enemyType=="enemy2")
-                {
-                    context.beginPath();
-                    context.rect(enemyX, enemyY, 40, 40);
-                    context.fillStyle = "purple";
+                if (enemyType === "heart") {
+                    drawHeart(context, enemyX, enemyY);
+                    return;
                 }
 
-                else if(enemyType=="heart")
-                {
-                    context.drawImage(heart,enemyX,enemyY);
+                if (enemyType === "enemy2_bullet" || enemyType === "boss1_bullet1" || enemyType === "boss1_bullet2") {
+                    drawBullet(context, enemyX, enemyY);
+                    return;
                 }
 
-                else if(enemyType=="enemy2_bullet" || enemyType=="boss1_bullet1" || enemyType=="boss1_bullet2")
-                {
-                    context.drawImage(enemy2_bullet,enemyX,enemyY);
-                }
-
-                else if(enemyType=="boss1")
-                {
-                    context.beginPath();
-                    context.rect(enemyX, enemyY, 60, 60);
-                    context.fillStyle = "black";
-                }
-
-                context.fill();
             }
             
 
