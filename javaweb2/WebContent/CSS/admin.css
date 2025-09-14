@@ -1,0 +1,25 @@
+
+#admin_main
+{
+    padding-left:100px;
+    padding-top:100px;
+    background-color: white;
+    height:700px;
+}
+
+#div_table
+{
+
+    overflow-y:scroll;
+    height:200px;
+    width:800px;
+}
+
+
+#table3 table, th,td
+{
+	border:solid 1px;
+	border-collapse: collapse;
+	
+    padding:10px;
+}

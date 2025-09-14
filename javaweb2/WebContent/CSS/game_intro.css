@@ -1,0 +1,52 @@
+#game_list #intro
+{
+    text-align:center;
+    margin:0px;
+    margin-top:100px;
+    border:solid 1px;
+    margin-left:20px;
+    margin-right:20px;
+
+}
+
+
+#game_list .list1
+{
+    display:block;
+    margin:0px;
+    border:solid 0.5px;
+    outline:0px;
+    margin-left:20px;
+    margin-right:20px;
+    height:50px;
+    width:264px;
+    margin-top:-1px;
+ 
+}
+
+#game_list .list1:hover
+{
+    background-color: lightgray;
+}
+
+
+#intro_title
+{
+    margin-top:100px;
+    text-align:center;
+}
+
+
+#game_dt
+{
+    padding-left:100px;
+}
+
+#game_dd
+{
+    background-color: white;
+    display:inline-block;
+    margin-left:100px;
+    width:1000px;
+    height:500px;
+}

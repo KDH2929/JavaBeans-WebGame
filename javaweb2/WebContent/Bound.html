@@ -1,0 +1,678 @@
+<html>
+    <head>
+        <style>
+            canvas
+            {
+                border: 1px solid;
+                background-color: white;
+            }
+
+        </style>
+
+        <script>
+            
+            window.addEventListener("keydown", function(e) {
+				if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+					e.preventDefault();
+				}
+			}, false);
+            
+            var canvas;
+            var context;
+            var ballx=100;
+            var bally=400;
+            var dx=2;
+            var dy=-3;
+            var gravityY=-3;
+            var onjumping=false;
+            var jumpCount=0;
+            var setjump;
+            var keypress={};
+            var block=new Array();
+            var triangle=new Array();
+            var blocked=false;
+            var stage=0;
+            var mouseX;
+            var mouseY;
+
+            var moving_block1_x=200;
+            var activ_moving_block1=false;
+            var activ_disappear=false;
+            var set_moving_block1;
+
+
+            var d_block1_position=200;
+            var d_block2_position=340;
+            var d_block3_position=340;
+
+            var moving_block1_dx=2;
+
+            function moving_block1()
+            {
+                if(moving_block1_x>550 || moving_block1_x<200)
+                {
+                    moving_block1_dx=-moving_block1_dx;
+                }
+
+                moving_block1_x+=moving_block1_dx;
+            }
+            
+            
+            
+            var setdrawGame=setInterval(drawGame,10);
+            setInterval(move, 10);
+            setInterval(blocking,10);
+            setInterval(gravity,10);
+            
+
+            function d2_disappear()
+            {
+                
+                d_block3_position=-999;
+                setTimeout(d2_appear,1500);
+            }
+
+            function d2_appear()
+            {
+                d_block3_position=340;
+
+                setTimeout(d2_disappear,1500);
+            }
+
+            function blocking()
+            {
+                if(stage==1)
+                {
+         
+                               
+                    if(ballx>block[0][0]-7&&(ballx)<block[0][0]+block[0][2]+7&&bally>=block[0][1]-(block[0][3]-9)&&bally<=block[0][1])
+                    {   
+                        gravityY=0;
+                        blocked=true;
+                    }
+
+                    else if(ballx>block[1][0]-7&&(ballx)<block[1][0]+block[1][2]+7&&bally>=block[1][1]-(block[1][3]-9)&&bally<=block[1][1])
+                    {   
+                        gravityY=0;
+                        blocked=true;
+                    }
+
+                    else if(ballx>block[2][0]-7&&(ballx)<block[2][0]+block[2][2]+7&&bally>=block[2][1]-(block[2][3]-9)&&bally<=block[2][1])
+                    {   
+                        gravityY=0;
+                        blocked=true;
+                    }
+
+                    else if(ballx>block[3][0]-7&&(ballx)<block[3][0]+block[3][2]+7&&bally>=block[3][1]-(block[3][3]-9)&&bally<=block[3][1])
+                    {   
+                        gravityY=0;
+                        blocked=true;
+                    }
+
+                    else if(ballx>680-7&&(ballx)<728+7&&bally>132+9&&bally<230+9)
+                    {   
+                        
+                        stage=2;
+                        ballx=100;
+                        bally=270;
+                        block.length=0;
+                    }
+
+
+                    else if(bally>=550-(block[1][3]-9))
+                    {
+                        ballx=100;
+                        bally=270;
+
+                        d_block1_position=200;
+                        d_block2_position=340;
+                    }
+
+                    else
+                    {
+                        blocked=false;
+                        if(onjumping==true)
+                        {
+                            gravityY=0;
+                        }
+
+                        else
+                        {
+                            gravityY=-3;
+                        }
+                    }
+
+                }
+
+                if(stage==2)
+                {
+                    
+
+                    if(ballx>block[0][0]-7&&(ballx)<block[0][0]+block[0][2]+7&&bally>=block[0][1]-(block[0][3]-9)&&bally<=block[0][1])
+                    {   
+                        gravityY=0;
+                        blocked=true;
+                    }
+
+                    else if(ballx>moving_block1_x-7&&(ballx)<moving_block1_x+block[0][2]+7&&bally>=block[0][1]-(block[0][3]-9)&&bally<=block[0][1])
+                    {   
+                        gravityY=0;
+                        blocked=true;
+                        ballx+=moving_block1_dx;
+                    }
+
+                    else if(bally>=550-(block[0][3]-9))
+                    {
+                        ballx=100;
+                        bally=270;
+                    }
+
+
+                    else if(ballx>685-7&&(ballx)<733+7&&bally>302+9&&bally<400+9)
+                    {   
+                        
+                        stage=3;
+                        ballx=100;
+                        bally=270;
+                        block.length=0;
+                        clearInterval(set_moving_block1);
+                        activ_moving_block1=false;
+                    }
+
+                    else
+                    {
+                        blocked=false;
+                        if(onjumping==true)
+                        {
+                            gravityY=0;
+                        }
+
+                        else
+                        {
+                            gravityY=-3;
+                        }
+                    }
+                }
+
+                if(stage==3)
+                {
+                    if(ballx>block[0][0]-7&&(ballx)<block[0][0]+block[0][2]+7&&bally>=block[0][1]-(block[0][3]-9)&&bally<=block[0][1])
+                    {   
+                        dy=-3;
+                        gravityY=0;
+                        blocked=true;
+                    }
+
+                    else if(ballx>d_block1_position-7&&(ballx)<d_block1_position+block[0][2]+7&&bally>=block[0][1]-(block[0][3]-9)&&bally<=block[0][1])
+                    {   
+                        dy=-3;
+                        gravityY=0;
+                        blocked=true;
+                        
+                        setTimeout(function(){d_block1_position=-999;},500);
+                    }
+
+                    else if(ballx>d_block2_position-7&&(ballx)<d_block2_position+block[0][2]+7&&bally>=block[0][1]-(block[0][3]-9)&&bally<=block[0][1])
+                    {   
+                        dy=-3;
+                        gravityY=0;
+                        blocked=true;
+                        
+                        setTimeout(function(){d_block2_position=-999;},500);
+                    }
+
+                    else if(ballx>block[1][0]-7&&(ballx)<block[1][0]+block[1][2]+7&&bally>=block[1][1]-(block[1][3]-9)&&bally<=block[1][1])
+                    {   
+                        dy=-3;
+                        gravityY=0;
+                        blocked=true;
+                    }
+
+                    else if(ballx>block[1][0]-7&&(ballx)<block[1][0]+block[1][2]+7&&bally<=block[1][1])
+                    {
+                        blocked=false;
+                        dy=-8;
+                        
+                    }
+
+                    else if(ballx>d_block3_position-7&&(ballx)<d_block3_position+block[0][2]+7&&bally>=160-(block[0][3]-9)&&bally<=160)
+                    {   
+                        dy=-3;
+                        gravityY=0;
+                        blocked=true;
+                    }
+
+                    else if(ballx>block[2][0]-7&&(ballx)<block[2][0]+block[2][2]+7&&bally>=block[2][1]-(block[2][3]-9)&&bally<=block[2  ][1])
+                    {   
+                        dy=-3;
+                        gravityY=0;
+                        blocked=true;
+                    }
+
+                    else if(ballx>108-7&&(ballx)<157+7&&bally>46+9&&bally<145+9)
+                    {   
+                        stage=4;
+                        ballx=100;
+                        bally=270;
+                        block.length=0;
+                        clearTimeout(d2_disappear);
+                        clearTimeout(d2_appear);
+                        activ_disappear=false;
+
+                    }
+
+                    else if(bally>=550-(block[1][3]-9))
+                    {
+                        dy=-3;
+                        d_block1_position=200;
+                        d_block2_position=340;
+
+                        ballx=100;
+                        bally=270;
+                    }
+
+                    else
+                    {
+                        blocked=false;
+                        if(onjumping==true)
+                        {
+                            gravityY=0;
+                        }
+
+                        else
+                        {
+                            gravityY=-3;
+                        }
+                    }
+
+                }
+
+                if(stage==4)
+                {
+
+                    if(((ballx+17>=triangle[0][0] && ballx+20<=triangle[0][0]+30)||(ballx-15>=triangle[0][0] && ballx-15<=triangle[0][0]+30)) && bally+18<=triangle[0][1] && bally+18>=triangle[0][1]-30)
+                    {   
+                        ballx=100;
+                        bally=270;
+                    }
+
+                    else if(((ballx+17>=triangle[1][0] && ballx+20<=triangle[1][0]+30)||(ballx-15>=triangle[1][0] && ballx-15<=triangle[1][0]+30)) && bally+18<=triangle[1][1] && bally+18>=triangle[1][1]-30)
+                    {   
+                        ballx=100;
+                        bally=270;
+                    }
+
+                    else if(((ballx+17>=triangle[2][0] && ballx+20<=triangle[2][0]+30)||(ballx-15>=triangle[2][0] && ballx-15<=triangle[2][0]+30)) && bally+18<=triangle[2][1] && bally+18>=triangle[2][1]-30)
+                    {   
+                        ballx=100;
+                        bally=270;
+                    }
+                    
+                    else if(ballx>block[0][0]-7&&(ballx)<block[0][0]+block[0][2]+7&&bally>=block[0][1]-(block[0][3]-9)&&bally<=block[0][1])
+                    {   
+                    
+                        gravityY=0;
+                        blocked=true;
+                    }
+                    //||(ballx-20)<=triangle[0][0]+30)
+                    
+
+                    
+
+                    else if(bally>=550-(block[1][3]-9))
+                    {
+                        ballx=100;
+                        bally=270;
+                    }
+
+                    else if(ballx>685-7&&(ballx)<733+7&&bally>302+9&&bally<400+9)
+                    {   
+                        
+                        stage=5;
+                        ballx=100;
+                        bally=270;
+                        block.length=0;
+                        triangle.length=0;
+                    }
+
+                    else
+                    {
+                        blocked=false;
+                        if(onjumping==true)
+                        {
+                            gravityY=0;
+                        }
+
+                        else
+                        {
+                            gravityY=-3;
+                        }
+                    }
+                }
+            }
+
+
+           
+          
+
+            function make_block(x,y,width,height)
+            {
+                var position_block=[x,y,width,height];
+                block.push(position_block);
+
+                var canvas = document.getElementById('myCanvas');
+                var context = canvas.getContext('2d');
+
+                context.beginPath();
+                context.rect(x, y, width, height);
+                context.fillStyle = "saddlebrown";
+
+                context.fill();
+            }
+
+
+            
+            function make_moving_block(x,y,width,height)
+            {
+                var canvas = document.getElementById('myCanvas');
+                var context = canvas.getContext('2d');
+
+                context.beginPath();
+                context.rect(x, y, width, height);
+                context.fillStyle = "saddlebrown";
+
+                context.fill();
+            }
+
+
+            function make_disappear_block(x,y,width,height)
+            {
+                var canvas = document.getElementById('myCanvas');
+                var context = canvas.getContext('2d');
+
+                context.beginPath();
+                context.rect(x, y, width, height);
+                context.fillStyle = "wheat";
+
+                context.fill();
+            }
+
+
+            function make_disappear_block2(x,y,width,height)
+            {
+                var canvas = document.getElementById('myCanvas');
+                var context = canvas.getContext('2d');
+
+                context.beginPath();
+                context.rect(x, y, width, height);
+                context.fillStyle = "saddlebrown";
+
+                context.fill();
+            }
+
+
+            function make_jump_block(x,y,width,height)
+            {
+                var position_block=[x,y,width,height];
+                block.push(position_block);
+
+
+                var canvas = document.getElementById('myCanvas');
+                var context = canvas.getContext('2d');
+
+                context.beginPath();
+                context.rect(x, y, width, height);
+                context.fillStyle = "deepskyblue";
+
+                context.fill();
+            }
+
+
+
+            function make_portal(x,y,width,height)
+            {
+                var position_block=[x,y,width,height];
+                block.push(position_block);
+
+                var canvas = document.getElementById('myCanvas');
+                var context = canvas.getContext('2d');
+
+                context.beginPath();
+                context.rect(x, y, width, height);
+                context.fillStyle = "blue";
+
+                context.fill();
+            }
+
+            function make_triangle(x1,x2)
+            {
+                var position_block=[x1,x2];
+                triangle.push(position_block);
+                
+                var canvas = document.getElementById('myCanvas');
+                var context = canvas.getContext('2d');
+
+                context.beginPath();
+                context.moveTo(x1, x2);
+                context.lineTo(x1+15, x2-30);
+                context.lineTo(x1+30, x2);
+                context.closePath();
+                context.fillStyle = "gray";
+                context.fill();
+
+            }
+
+
+            function gravity()
+            {
+                bally=bally-gravityY;
+            }
+            
+            function jump()
+            {
+                if(jumpCount==37)
+                {
+                    clearInterval(setjump);
+                    onjumping=false;
+                    jumpCount=0;
+                    gravityY=-3;
+                }
+
+                bally=bally+dy;
+                jumpCount++;
+            }
+
+
+            function drawGame()         // 게임을 만드는 핵심부분
+            {
+                var canvas = document.getElementById("myCanvas");
+                var context = canvas.getContext("2d");
+                
+                context.clearRect(0, 0, 800, 550);
+
+
+                if(stage==0)
+                {
+                    context.fillStyle="black";
+                    context.font = '30pt Arial'
+                    context.fillText("공튀기기",300 ,230);
+                    context.font = '20pt Arial'
+                    context.fillText("게임시작",330 ,330);
+                    context.font = '15pt Arial'
+                    context.fillText("방향키:이동       스페이스바:점프",250 ,430);
+                }
+
+
+                if(stage==1)
+                {
+                    drawBall();
+                    make_block(60,400,150,30);
+                    make_block(250,350,150,30);
+                    make_block(440,300,150,30);
+                    make_block(630,250,150,30);
+                    make_portal(680,130,50,100);
+
+                    context.fillStyle="black";
+                    context.font = '15pt Arial'
+                    context.fillText("stage"+stage,30 ,40);
+                }
+
+                if(stage==2)
+                {
+                    drawBall();
+
+                    if(activ_moving_block1==false)
+                    {
+                        activ_moving_block1=true;
+                        set_moving_block1=setInterval(moving_block1,10);
+                    }
+
+                    make_block(60,400,100,30);
+                    make_moving_block(moving_block1_x,400,100,30);
+                    make_portal(685,300,50,100);
+
+                    context.fillStyle="black";
+                    context.font = '15pt Arial'
+                    context.fillText("stage"+stage,30 ,40);
+                }
+
+                if(stage==3)
+                {
+                    drawBall();
+
+                    if(activ_disappear==false)
+                    {
+                        setTimeout(d2_disappear,1000);
+                        activ_disappear=true
+                    }
+                    
+
+                    make_block(60,400,100,30);
+                    make_disappear_block(d_block1_position,400,100,30);
+                    make_disappear_block(d_block2_position,400,100,30);
+                    make_jump_block(480,400,100,30);
+                    make_disappear_block2(d_block3_position,160,100,30);
+                    make_block(200,160,100,30);
+                    make_portal(108,45,50,100);
+
+                    context.fillStyle="black";
+                    context.font = '15pt Arial'
+                    context.fillText("stage"+stage,30 ,40);
+                    context.font = '13pt Arial'
+                    context.fillText("하늘색 발판에서 점프할 시",470,450);
+                    context.fillText("높이 뛰어오릅니다.",470,470);
+
+                }
+
+                if(stage==4)
+                {
+                    drawBall();
+                    make_block(60,400,600,30);
+                    make_triangle(220,400);
+                    make_triangle(370,400);
+                    make_triangle(520,400);
+                    make_portal(685,300,50,100);
+
+                    context.fillStyle="black";
+                    context.font = '15pt Arial'
+                    context.fillText("stage"+stage,30 ,40);
+                }
+
+
+                if(stage==5)
+                {
+                    context.fillStyle="black";
+                    context.font = '30pt Arial'
+                    context.fillText("게임 종료",300 ,230);
+                    context.font = '20pt Arial'
+                 
+                }
+                
+                //context.fillText(mouseX+" "+mouseY,30 ,30);
+            }
+
+
+            function drawBall()
+            {
+                var canvas = document.getElementById("myCanvas");
+                var context = canvas.getContext("2d");
+
+                
+                context.beginPath();
+                context.arc(ballx,bally,20,0,Math.PI*2,true)
+                context.fillStyle="yellow";
+                context.closePath();
+                context.fill();
+
+            }
+
+            
+
+            function move()
+            {
+                if(keypress[37]==true)
+                {
+                    if(dx>0)
+                    {
+                        dx=-dx;
+                    }
+
+                    ballx=ballx+dx;
+                    
+                }
+
+
+                if(keypress[39]==true)
+                {
+                    if(dx<0)
+                    {
+                        dx=-dx;
+                    }
+
+                
+                    ballx=ballx+dx;
+                    
+                }
+
+                if(keypress[32]==true && onjumping==false && blocked==true)
+                {
+                    onjumping=true;
+                    gravityY=0;
+                    setjump=setInterval(jump,10);
+                    
+                }
+
+                
+            }
+
+            function keydown(e)
+            {
+                keypress[e.keyCode]=true;
+            }
+
+            function keyup(e)
+            {
+                keypress[e.keyCode]=false;
+            }
+
+            function mouseclick(e)
+            {
+                mouseX=e.offsetX;
+                mouseY=e.offsetY;
+
+                if(stage==0&&e.offsetX>=332&&e.offsetX<=438&&e.offsetY>=307&&e.offsetY<=335)
+                {
+                    stage=1;
+                }
+            }
+
+
+        </script>
+    </head>
+    <body onkeydown="keydown(event)" onkeyup="keyup(event)" >
+        
+        <canvas id="myCanvas" onclick="mouseclick(event)" width="800" height="550"></canvas>
+        
+
+    </body>
+</html> 
