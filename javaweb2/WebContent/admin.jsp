@@ -14,7 +14,7 @@
 	 <%		// 데이터 갱신을 위한 곳	
 		Class.forName("com.mysql.jdbc.Driver");
 
-	    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/user_data", "root", "1423");
+	    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/user_data", "root", "1234");
 	    Statement stmt = conn.createStatement();
 	    ResultSet rset;
 	    String sqlStr="select*from users";
@@ -108,6 +108,7 @@
             
 </body>
 </html>
+
 
 
 
